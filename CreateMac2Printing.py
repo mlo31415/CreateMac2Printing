@@ -35,8 +35,8 @@ for directory in dirList:
     for htmlFilename in htmlFileList:
 
         # Open the file and read it into a list of strings
-        htmlfile=open(os.path.join(directory, htmlFilename), "r")
-        inputHtml=htmlfile.readlines()
+        with open(os.path.join(directory, htmlFilename), "r") as htmlfile:
+            inputHtml=htmlfile.readlines()
 
         # The structure of the more recent individual page html files is as follows:
         # The name of the file is "<prefix><issue number>-<page number>"
@@ -62,12 +62,6 @@ for directory in dirList:
         #       <A HREF="Fan-Fare33-02.jpeg"><IMG SRC="Fan-Fare33-02.jpeg" HEIGHT="1190" WIDTH="922" BORDER="0"></A>
 
         # We'll go through the contents, modifying as we go
-        header=[]
-        navButtons=[[]]
-        footerContent=[]
-        headerContent=[]
-        content=[]
-
         def MarkSection(input, starttext, endtext, required, replacementtext):
             startline=-1
             for i in range(0, len(input)-1):
@@ -123,6 +117,7 @@ for directory in dirList:
         # Find and remove tables of buttons (save the previous and next page nav button information)
         # First identify the actual content.
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
+        navButtons=[[]]
         while True:
             navstuff=MarkSection(inputHtml, '<TABLE ALIGN="center" CLASS="navbar"><TR>', "</TR></TABLE>", False, "@@Navbuttons")
             if navstuff == None:
@@ -150,5 +145,4 @@ for directory in dirList:
             printingHtml.remove("@@Navbuttons")
 
 
-        pass
-pass
+    pass
