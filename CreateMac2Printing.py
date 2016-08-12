@@ -152,7 +152,18 @@ for directory in dirList:
         printingContent = copy.deepcopy(content)
 
         # Find the '<A REF...</A>' line and surround it with the table code
-        for i in range(0, len(printingContent)):
-            pass
+        aFound=False
+        i=0
+        while not aFound and i<len(printingContent):
+            l=printingContent[i]
+            if l.find("<A HREF=") > -1 and l.find("</A>") > -1:
+                aFound=True
+                printingContent.insert(i, '<table border="1"><tr><td>')
+                printingContent.insert(i+2, '</td></tr></table>')
+                i=i+2
+            i=i+1
+        if not aFound:
+            print("   ***No '<A HREF...</A>' found in" + str(printingContent))
+            continue
 
     pass
