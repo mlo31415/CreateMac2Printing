@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import filedialog
 import os
+import copy
 import operator
 import re
 
@@ -35,7 +36,7 @@ for directory in dirList:
 
         # Open the file and read it into a list of strings
         htmlfile=open(os.path.join(directory, htmlFilename), "r")
-        input=htmlfile.readlines()
+        inputHtml=htmlfile.readlines()
 
         # The structure of the more recent individual page html files is as follows:
         # The name of the file is "<prefix><issue number>-<page number>"
@@ -102,28 +103,28 @@ for directory in dirList:
 
         # First, find the document HTML header
         # This begins with <!DOCTYPE HTML> and ends with </HEAD></BODY>
-        header=MarkSection(input, '<!DOCTYPE HTML>', "</HEAD><BODY>", True, "@@Header")
+        header=MarkSection(inputHtml, '<!DOCTYPE HTML>', "</HEAD><BODY>", True, "@@Header")
         if header == None:
             continue
 
-        # And HTML footer
-        footer=MarkSection(input, "</BODY></HTML>", None, True, "@@Footer")
+        # And find the HTML footer
+        footer=MarkSection(inputHtml, "</BODY></HTML>", None, True, "@@Footer")
 
         # Next identify the actual content.
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
-        content=MarkSection(input, '<DIV CLASS="center">', "</DIV>", True, "@@Content")
+        content=MarkSection(inputHtml, '<DIV CLASS="center">', "</DIV>", True, "@@Content")
         if content == None:
             continue
 
         # Find and remove any <HR> lines
-        while MarkSection(input, '<HR>', "", False, "@@HR"):
+        while MarkSection(inputHtml, '<HR>', "", False, "@@HR"):
             pass
 
         # Find and remove tables of buttons (save the previous and next page nav button information)
         # First identify the actual content.
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
         while True:
-            navstuff=MarkSection(input, '<TABLE ALIGN="center" CLASS="navbar"><TR>', "</TR></TABLE>", False, "@@Navbuttons")
+            navstuff=MarkSection(inputHtml, '<TABLE ALIGN="center" CLASS="navbar"><TR>', "</TR></TABLE>", False, "@@Navbuttons")
             if navstuff == None:
                 break
 
@@ -135,8 +136,19 @@ for directory in dirList:
                 if navstuff[i].find('<TD CLASS="navbar">') != 0:
                     print(" *** nav button line not starting '<TD CLASS=\"navbar\">' found in " + htmlFilename)
                     break
-            # Save and then delete the block
+            # Save the block
             navButtons.append(navstuff)
+
+        # -----------------------------------------------------------
+        # Now we start building up the printing html page
+        # This will be like the original, but with ann HRs and all nav buttons removed.
+        printingHtml=copy.deepcopy(inputHtml)
+
+        if printingHtml.count("@@HR") > 0:
+            printingHtml.remove("@@HR")
+        while printingHtml.count("@@Navbuttons") > 0:
+            printingHtml.remove("@@Navbuttons")
+
 
         pass
 pass
