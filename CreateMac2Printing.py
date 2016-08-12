@@ -67,101 +67,76 @@ for directory in dirList:
         headerContent=[]
         content=[]
 
-        # First, find the document header
+        def MarkSection(input, starttext, endtext, required, replacementtext):
+            startline=-1
+            for i in range(0, len(input)-1):
+                l=input[i]
+                if l.find(starttext) > -1:
+                    startline=i
+                    break
+            if startline == -1:
+                if required:
+                    print("   ***" + starttext + " not found in "+htmlFilename)
+                return None
+
+            if endtext != None:
+                endline=-1
+                for i in range(startline, len(input)-1):
+                    l=input[i]
+                    if l.find(endtext) > -1:
+                        endline=i
+                        break
+                if endline == -1:
+                    if required:
+                        print(" ***" + endtext + " not found in "+htmlFilename)
+                    return None
+            else:
+                endline=startline
+
+            # Transfer the content lines and replace them by a line "@@Header"
+            savedstuff = input[startline: endline + 1]
+            if (endline > startline):
+                del input[startline : endline]
+            input[startline]=replacementtext
+            return savedstuff
+
+        # First, find the document HTML header
         # This begins with <!DOCTYPE HTML> and ends with </HEAD></BODY>
-
-        startline=-1
-        for i in range(0, len(input)-1):
-            l=input[i]
-            if l.find('<!DOCTYPE HTML>') > -1:
-                startline=i
-                break
-        if startline == -1:
-            print("   ***'<!DOCTYPE HTML>' not found in "+htmlFilename)
+        header=MarkSection(input, '<!DOCTYPE HTML>', "</HEAD><BODY>", True, "@@Header")
+        if header == None:
             continue
 
-        endline=-1
-        for i in range(startline, len(input)-1):
-            l=input[i]
-            if l.find("</HEAD><BODY>") > -1:
-                endline=i
-                break
-        if endline == -1:
-            print(" ***'</HEAD></BODY>' not found in "+htmlFilename)
-            continue
-
-        # Transfer the content lines and replace them by a line "@@Header"
-        header=input[startline : endline+1]
-        del input[startline : endline]
-        input[startline]="@@Header"
+        # And HTML footer
+        footer=MarkSection(input, "</BODY></HTML>", None, True, "@@Footer")
 
         # Next identify the actual content.
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
-        startline=-1
-        for i in range(0, len(input)-1):
-            l=input[i]
-            if l.find('<DIV CLASS="center">') > -1:
-                startline=i
-                break
-        if startline == -1:
-            print("   ***'<DIV CLASS=\"center\">' not found in "+htmlFilename)
+        content=MarkSection(input, '<DIV CLASS="center">', "</DIV>", True, "@@Content")
+        if content == None:
             continue
-
-        endline=-1
-        for i in range(startline, len(input)-1):
-            l=input[i]
-            if l.find("</DIV>") > -1:
-                endline=i
-                break
-        if endline == -1:
-            print(" ***'</DIV>' not found in "+htmlFilename)
-            continue
-
-        # Transfer the content lines and replace them by a line "@@Content"
-        content=input[startline : endline+1]
-        del input[startline : endline]
-        input[startline]="@@Content"
 
         # Find and remove any <HR> lines
-        for i in range(0, len(input)-1):
-            l=input[i]
-            if l.find('<HR>') == 0:
-                input[i]="@@HR"
+        while MarkSection(input, '<HR>', "", False, "@@HR"):
+            pass
 
         # Find and remove tables of buttons (save the previous and next page nav button information)
         # First identify the actual content.
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
         while True:
-            startline=-1
-            for i in range(0, len(input)-1):
-                l=input[i]
-                if l.find('<TABLE ALIGN="center" CLASS="navbar"><TR>') > -1:
-                    startline=i
-                    break
-            if startline == -1:
-                break
-
-            endline=-1
-            for i in range(startline, len(input)-1):
-                l=input[i]
-                if l.find("</TR></TABLE>") > -1:
-                    endline=i
-                    break
-            if endline == -1:
+            navstuff=MarkSection(input, '<TABLE ALIGN="center" CLASS="navbar"><TR>', "</TR></TABLE>", False, "@@Navbuttons")
+            if navstuff == None:
                 break
 
             # Confirm that all the intervening lines begin with '<TD CLASS="navbar">'
-            if startline+1 > endline-1:
+            if len(navstuff) < 2:
                 print(" ***navbar block found without buttons found between " + str(startline)+ " and " + str(endline) + " in " + htmlFilename)
                 break
-            for i in range(startline+1, endline-1):
-                if input[i].find('<TD CLASS="navbar">') != 0:
-                    print(" *** line not starting '<TD CLASS=\"navbar\">' found between " + str(startline)+ " and " + str(endline) + " in " + htmlFilename)
+            for i in range(1, len(navstuff)-1):
+                if navstuff[i].find('<TD CLASS="navbar">') != 0:
+                    print(" *** nav button line not starting '<TD CLASS=\"navbar\">' found in " + htmlFilename)
                     break
             # Save and then delete the block
-            navButtons.append(input[startline : endline])
-            del input[startline : endline]
-            input[startline]="@@Navbuttons"
+            navButtons.append(navstuff)
 
         pass
 pass
