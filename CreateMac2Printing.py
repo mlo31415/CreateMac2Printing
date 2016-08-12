@@ -62,8 +62,7 @@ for directory in dirList:
 
         # We'll go through the contents, modifying as we go
         header=[]
-        topNavButtons=[]
-        BottomNavButtons=[]
+        navButtons=[[]]
         footerContent=[]
         headerContent=[]
         content=[]
@@ -102,6 +101,39 @@ for directory in dirList:
                 input[i]="@@HR"
 
         # Find and remove tables of buttons (save the previous and next page nav button information)
+        # First identify the actual content.
+        # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
+        while True:
+            startline=-1
+            for i in range(0, len(input)-1):
+                l=input[i]
+                if l.find('<TABLE ALIGN="center" CLASS="navbar"><TR>') > -1:
+                    startline=i
+                    break
+            if startline == -1:
+                break
+
+            endline=-1
+            for i in range(startline, len(input)-1):
+                l=input[i]
+                if l.find("</TR></TABLE>") > -1:
+                    endline=i
+                    break
+            if endline == -1:
+                break
+
+            # Confirm that all the intervening lines begin with '<TD CLASS="navbar">'
+            if startline+1 > endline-1:
+                print(" ***navbar block found without buttons found between " + str(startline)+ " and " + str(endline) + " in " + htmlFilename)
+                break
+            for i in range(startline+1, endline-1):
+                if input[i].find('<TD CLASS="navbar">') != 0:
+                    print(" *** line not starting '<TD CLASS=\"navbar\">' found between " + str(startline)+ " and " + str(endline) + " in " + htmlFilename)
+                    break
+            # Save and then delete the block
+            navButtons.append(input[startline : endline])
+            del input[startline : endline]
+            input[startline]="@@Navbuttons"
 
         pass
 pass
