@@ -34,6 +34,10 @@ for directory in dirList:
     # For each html file in the directory
     for htmlFilename in htmlFileList:
 
+        # Skip index files
+        if htmlFilename == "index.html":
+            continue
+
         # Open the file and read it into a list of strings
         with open(os.path.join(directory, htmlFilename), "r") as htmlfile:
             inputHtml=htmlfile.readlines()
