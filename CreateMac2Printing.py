@@ -172,12 +172,23 @@ for directory in dirList:
                 if input[i] == textToBeReplaced:
                     del(input[i])
                     input[i:i]=linesToInsert
-                    return input
-            return None
+                    return True
+
+            print("   *** Could not find '" + textToBeReplaced+"' in "+str(input))
+            return False
 
         if not InsertLines(printingHtml, "@@Content", printingContent):
-            print("   *** Could not find '@@Content' in "+str(input))
             continue
 
+        if not InsertLines(printingHtml, "@@Header", header):
+            continue
+
+        if not InsertLines(printingHtml, "@@Footer", footer):
+            continue
+
+        # Write out the printing version of the page
+        splt=os.path.splitext(htmlFilename)
+        printFilename=os.path.join(directory, splt[0]+"P"+splt[1])
+        i=0
         pass
     pass
