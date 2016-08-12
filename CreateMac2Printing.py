@@ -166,4 +166,18 @@ for directory in dirList:
             print("   ***No '<A HREF...</A>' found in" + str(printingContent))
             continue
 
+        def InsertLines(input, textToBeReplaced, linesToInsert):
+            # Scan through input looking for a line containing textToBeReplaced
+            for i in range(0, len(input)-1):
+                if input[i] == textToBeReplaced:
+                    del(input[i])
+                    input[i:i]=linesToInsert
+                    return input
+            return None
+
+        if not InsertLines(printingHtml, "@@Content", printingContent):
+            print("   *** Could not find '@@Content' in "+str(input))
+            continue
+
+        pass
     pass
