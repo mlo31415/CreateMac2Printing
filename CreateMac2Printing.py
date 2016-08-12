@@ -67,7 +67,35 @@ for directory in dirList:
         headerContent=[]
         content=[]
 
-        # First identify the actual content.
+        # First, find the document header
+        # This begins with <!DOCTYPE HTML> and ends with </HEAD></BODY>
+
+        startline=-1
+        for i in range(0, len(input)-1):
+            l=input[i]
+            if l.find('<!DOCTYPE HTML>') > -1:
+                startline=i
+                break
+        if startline == -1:
+            print("   ***'<!DOCTYPE HTML>' not found in "+htmlFilename)
+            continue
+
+        endline=-1
+        for i in range(startline, len(input)-1):
+            l=input[i]
+            if l.find("</HEAD><BODY>") > -1:
+                endline=i
+                break
+        if endline == -1:
+            print(" ***'</HEAD></BODY>' not found in "+htmlFilename)
+            continue
+
+        # Transfer the content lines and replace them by a line "@@Header"
+        header=input[startline : endline+1]
+        del input[startline : endline]
+        input[startline]="@@Header"
+
+        # Next identify the actual content.
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
         startline=-1
         for i in range(0, len(input)-1):
