@@ -144,5 +144,11 @@ for directory in dirList:
         while printingHtml.count("@@Navbuttons") > 0:
             printingHtml.remove("@@Navbuttons")
 
+        # Now we need to modify the content lines to include the bounding box
+        printingContent = copy.deepcopy(content)
+
+        # Find the '<A REF...</A>' line and surround it with the table code
+        for i in range(0, len(printingContent)):
+            pass
 
     pass
