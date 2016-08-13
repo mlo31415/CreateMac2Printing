@@ -219,6 +219,11 @@ for directory in dirList:
         if len(navButtons) > 1 and not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[1]):
             continue
 
+        # Write out the display version of the page
+        displayPathname=os.path.join(directory, htmlFilename)
+        with open(displayPathname, "w") as f:
+            f.writelines(normalHtml)
+
         i=0
         pass
     pass
