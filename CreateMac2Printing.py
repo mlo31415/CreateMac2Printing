@@ -201,7 +201,7 @@ for directory in dirList:
         navstuff.insert(0, '<iframe src="' + printFilename + '" style="display:none;" name="Mac2Pframe"></iframe>')
 
         # Insert the new print button between the last two nav buttons
-        navstuff.insert(-2, 'TD CLASS="navbar"><form><input type="button" onclick="frames[\'Mac2Pframe\'].print()" value="Print"></form></TD>')
+        navstuff.insert(-2, '<TD CLASS="navbar"><form><input type="button" onclick="frames[\'Mac2Pframe\'].print()" value="Print"></form></TD>')
 
         navButtons[0]=navstuff
 
