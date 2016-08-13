@@ -115,13 +115,17 @@ for directory in dirList:
 
         # -----------------------------------------------------------
         # Now we start building up the printing html page
-        # This will be like the original, but with ann HRs and all nav buttons removed.
+        # This will be like the original, but with all HRs and all nav buttons removed.
         printingHtml=copy.deepcopy(inputHtml)
-
         if printingHtml.count("@@HR") > 0:
             printingHtml.remove("@@HR")
         while printingHtml.count("@@Navbuttons") > 0:
             printingHtml.remove("@@Navbuttons")
+
+        # Now locate and drop bottom lines of text.
+        # They will be bracketed by <P...</P>
+        pattern = re.compile("^<P.*</P>$")  # Regex pattern to match page <P...</P>
+        printingHtml=[l for l in printingHtml if not pattern.match(l)]
 
         # Now we need to modify the content lines to include the bounding box
         printingContent = copy.deepcopy(content)
@@ -141,9 +145,11 @@ for directory in dirList:
             print("   ***No '<A HREF...</A>' found in" + str(printingContent))
             continue
 
+        # And insert it back into the file.
         if not Helpers.InsertLines(printingHtml, "@@Content", printingContent):
             continue
 
+        # Restore the rest of the content
         if not Helpers.InsertLines(printingHtml, "@@Header", header):
             continue
 
