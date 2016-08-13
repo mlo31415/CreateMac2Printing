@@ -18,7 +18,7 @@ os.chdir(dirname)
 dirList = os.listdir(".")
 dirList = [f for f in dirList if os.path.isdir(f)]
 
-toBeSkipped=["Abstract", "Acolyte", "Amor", "AngeliqueTrouvere", "Aspidistra", "AvramDavidson", "BestOfSusanWood", "Bids_etc", "Beyond_Enchanted", "BNF_of_IZ", "Boskone", "Broken Toys",
+toBeSkipped=["Abstract", "Acolyte", "Amor", "AngeliqueTrouvere", "Aspidistra", "Australian_SFR", "AvramDavidson", "BestOfSusanWood", "Bids_etc", "Beyond_Enchanted", "BNF_of_IZ", "Boskone", "Broken Toys",
              "Censored", "Chanticlear", "Chicon", "Cinvention", "Clevention", "Comic_Art", "Confusion", "ConStellation", "Crifanac", "Cry_of_the_Nameless", "Denvention", "Destiny",
              "Diagonal_Relationship", "Don_Ford_Notebook", "Eastercon", "Eclipse", "Enchanted_Duplicxtor", "Entropy", "Fan-Dango", "Fan-Fare", "Fanscient", "Fantascience_Digest",
              "Fantastic_Worlds", "Fantasy_Comics", "Fantasy_Comment", "FightingSmofs", "FuturiaFantasia", "Futurian", "GAPAVanguard", "Gardyloo", "Gegenschein", "GenrePlat", "Gotterdammerung",
@@ -38,7 +38,8 @@ for directory in dirList:
 
     # Create a list of all html files in the directory
     htmlFileList=os.listdir(directory)
-    htmlFileList=[f for f in htmlFileList if os.path.splitext(f)[1].lower() == ".html"]
+    htmlFileList=[f for f in htmlFileList if os.path.splitext(f)[1].lower() == ".html"] # HTML files only
+    htmlFileList=[f for f in htmlFileList if os.path.splitext(f)[0][-1:] != "P"] # Don't process printing HTML files which have already been created -- they'll most likely be overwritten.
 
     # For each html file in the directory
     for htmlFilename in htmlFileList:
@@ -128,7 +129,7 @@ for directory in dirList:
         printingHtml=[l for l in printingHtml if not pattern.match(l)]
 
         # And add the printing line right after the content
-        Helpers.InsertLines(printingHtml, "@@Content", ["@@Content", "<P>Printed by Fanac.org at at MidAmericon 2. For <i>much</i>more, see http://fanac.org</P>"])
+        Helpers.InsertLines(printingHtml, "@@Content", ["@@Content", "<P>Printed by Fanac.org at at MidAmericon 2. For <i>much</i> more, see http://fanac.org</P>"])
 
         # Now we need to modify the content lines to include the bounding box
         printingContent = copy.deepcopy(content)
