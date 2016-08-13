@@ -20,7 +20,15 @@ dirList = [f for f in dirList if os.path.isdir(f)]
 toBeSkipped=["Abstract", "Acolyte", "Amor", "AngeliqueTrouvere", "Aspidistra", "AvramDavidson", "BestOfSusanWood", "Bids_etc", "Beyond_Enchanted", "BNF_of_IZ", "Boskone", "Broken Toys",
              "Censored", "Chanticlear", "Chicon", "Cinvention", "Clevention", "Comic_Art", "Confusion", "ConStellation", "Crifanac", "Cry_of_the_Nameless", "Denvention", "Destiny",
              "Diagonal_Relationship", "Don_Ford_Notebook", "Eastercon", "Eclipse", "Enchanted_Duplicxtor", "Entropy", "Fan-Dango", "Fan-Fare", "Fanscient", "Fantascience_Digest",
-             "Fantastic_Worlds", "Fantasy_Comics", "Fantasy_Comment", "FightingSmofs", "FuturiaFantasia", "Futurian", "GAPAVanguard", "Gardyloo", "Gegenschein", "GenrePlat"]
+             "Fantastic_Worlds", "Fantasy_Comics", "Fantasy_Comment", "FightingSmofs", "FuturiaFantasia", "Futurian", "GAPAVanguard", "Gardyloo", "Gegenschein", "GenrePlat", "Gotterdammerung",
+             "Harlan_Ellison", "Helios", "Hyphen", "IGOTS", "IguanaCon", "Interaction", "Journal_of_SF", "LASFS", "Le_Zombie", "leaflet", "LeeHoffman", "LeVombiteur", "Loncon",
+             "LostToys", "Lunacon", "Mad3Party", "MagiCon", "Mallophagan", "Masque", "MelbourneBulletin", "Mimosa", "Minicon", "Miscellaneous", "Monster", "MT_Void", "Nebula",
+             "NebulaAwardsBanquet", "NewFrontiers", "Nolacon", "NOLAzine", "NowWesCon", "NOSFAn", "Novae_Terrae", "NYcon", "ODD", "OKon", "OperationFantast", "Opuntia", "Organlegger",
+             "Pacificon", "Peace_on_Sol_III", "peon", "Phan", "Philcon", "planet", "Planeteer", "Plokta", "Polaris", "Pong", "Quandry", "Rhodomagnetic", "Rogers_Cadenhead_APA_Pubs",
+             "RUNE", "ScientiComics", "Scream", "Seacon", "Sense_of_FAPA", "SF", "SF_Advertiser", "SF_Digest", "SF_Digest_2", "SF_Five_Yearly", "SFCon", "SFSFS", "Shangri-LA",
+             "Shards_of_Bable", "SkyHook", "Slant", "Solacon", "SpaceDiversions", "SpaceFlight", "SpaceMagazine", "Spaceship", "Spacewarp", "Spaceways", "Speculation", "SpinDizzy",
+             "Starlight", "SunSpots", "Syllabus", "TaralWaynePreviews", "TNFF", "TommyWorld", "Tomorrow", "Toto", "Tropicon", "TuckerBag", "Tympany", "Vampire", "Vanations",
+             "Vapourware", "vega", "Vertigo", "VOM", "Wastebasket", "WhatIsSFF", "WildHair", "Willis_papers", "Wrevenge", "X", "Yandro", "Yokohama", "Zenith"]
 
 dirList = [f for f in dirList if not f in toBeSkipped]
 
@@ -189,6 +197,8 @@ for directory in dirList:
         # Write out the printing version of the page
         splt=os.path.splitext(htmlFilename)
         printFilename=os.path.join(directory, splt[0]+"P"+splt[1])
+        with open(printFilename, "w") as f:
+            f.writelines(printingHtml)
         i=0
         pass
     pass
