@@ -127,6 +127,9 @@ for directory in dirList:
         pattern = re.compile("^<P.*</P>$")  # Regex pattern to match page <P...</P>
         printingHtml=[l for l in printingHtml if not pattern.match(l)]
 
+        # And add the printing line right after the content
+        Helpers.InsertLines(printingHtml, "@@Content", ["@@Content", "<P>Printed by Fanac.org at at MidAmericon 2. For <i>much</i>more, see http://fanac.org</P>"])
+
         # Now we need to modify the content lines to include the bounding box
         printingContent = copy.deepcopy(content)
 
