@@ -2,6 +2,7 @@ import tkinter
 from tkinter import filedialog
 import os
 import copy
+import Helpers
 import operator
 import re
 
@@ -22,13 +23,13 @@ toBeSkipped=["Abstract", "Acolyte", "Amor", "AngeliqueTrouvere", "Aspidistra", "
              "Diagonal_Relationship", "Don_Ford_Notebook", "Eastercon", "Eclipse", "Enchanted_Duplicxtor", "Entropy", "Fan-Dango", "Fan-Fare", "Fanscient", "Fantascience_Digest",
              "Fantastic_Worlds", "Fantasy_Comics", "Fantasy_Comment", "FightingSmofs", "FuturiaFantasia", "Futurian", "GAPAVanguard", "Gardyloo", "Gegenschein", "GenrePlat", "Gotterdammerung",
              "Harlan_Ellison", "Helios", "Hyphen", "IGOTS", "IguanaCon", "Interaction", "Journal_of_SF", "LASFS", "Le_Zombie", "leaflet", "LeeHoffman", "LeVombiteur", "Loncon",
-             "LostToys", "Lunacon", "Mad3Party", "MagiCon", "Mallophagan", "Masque", "MelbourneBulletin", "Mimosa", "Minicon", "Miscellaneous", "Monster", "MT_Void", "Nebula",
+             "LostToys", "Lunacon", "Mad3Party", "MagiCon", "Mallophagan", "Masque", "MelbourneBulletin", "Mimosa", "Minicon", "Miscellaneous", "Monster", "MT_Void",
              "NebulaAwardsBanquet", "NewFrontiers", "Nolacon", "NOLAzine", "NowWesCon", "NOSFAn", "Novae_Terrae", "NYcon", "ODD", "OKon", "OperationFantast", "Opuntia", "Organlegger",
              "Pacificon", "Peace_on_Sol_III", "peon", "Phan", "Philcon", "planet", "Planeteer", "Plokta", "Polaris", "Pong", "Quandry", "Rhodomagnetic", "Rogers_Cadenhead_APA_Pubs",
-             "RUNE", "ScientiComics", "Scream", "Seacon", "Sense_of_FAPA", "SF", "SF_Advertiser", "SF_Digest", "SF_Digest_2", "SF_Five_Yearly", "SFCon", "SFSFS", "Shangri-LA",
-             "Shards_of_Bable", "SkyHook", "Slant", "Solacon", "SpaceDiversions", "SpaceFlight", "SpaceMagazine", "Spaceship", "Spacewarp", "Spaceways", "Speculation", "SpinDizzy",
+             "RUNE", "ScientiComics", "Seacon", "Sense_of_FAPA", "SF", "SF_Advertiser", "SF_Digest", "SF_Digest_2", "SF_Five_Yearly", "SFCon", "SFSFS", "Shangri-LA",
+             "Shards_of_Bable", "SkyHook", "Slant", "Solacon", "SpaceDiversions", "SpaceFlight", "SpaceMagazine", "Spaceship", "Spacewarp", "Spaceways", "Speculation",
              "Starlight", "SunSpots", "Syllabus", "TaralWaynePreviews", "TNFF", "TommyWorld", "Tomorrow", "Toto", "Tropicon", "TuckerBag", "Tympany", "Vampire", "Vanations",
-             "Vapourware", "vega", "Vertigo", "VOM", "Wastebasket", "WhatIsSFF", "WildHair", "Willis_papers", "Wrevenge", "X", "Yandro", "Yokohama", "Zenith"]
+             "Vapourware", "Vega", "Vertigo", "VOM", "Wastebasket", "WhatIsSFF", "WildHair", "Willis_papers", "Wrevenge", "X", "Yandro", "Yokohama", "Zenith"]
 
 dirList = [f for f in dirList if not f in toBeSkipped]
 
@@ -73,57 +74,23 @@ for directory in dirList:
         # It also appears that the image content is always like this:
         #       <A HREF="Fan-Fare33-02.jpeg"><IMG SRC="Fan-Fare33-02.jpeg" HEIGHT="1190" WIDTH="922" BORDER="0"></A>
 
-        # We'll go through the contents, modifying as we go
-        def MarkSection(input, starttext, endtext, required, replacementtext):
-            startline=-1
-            for i in range(0, len(input)-1):
-                l=input[i]
-                if l.find(starttext) > -1:
-                    startline=i
-                    break
-            if startline == -1:
-                if required:
-                    print("   ***" + starttext + " not found in "+htmlFilename)
-                return None
-
-            if endtext != None:
-                endline=-1
-                for i in range(startline, len(input)-1):
-                    l=input[i]
-                    if l.find(endtext) > -1:
-                        endline=i
-                        break
-                if endline == -1:
-                    if required:
-                        print(" ***" + endtext + " not found in "+htmlFilename)
-                    return None
-            else:
-                endline=startline
-
-            # Transfer the content lines and replace them by a line "@@Header"
-            savedstuff = input[startline: endline + 1]
-            if (endline > startline):
-                del input[startline : endline]
-            input[startline]=replacementtext
-            return savedstuff
-
         # First, find the document HTML header
         # This begins with <!DOCTYPE HTML> and ends with </HEAD></BODY>
-        header=MarkSection(inputHtml, '<!DOCTYPE HTML>', "</HEAD><BODY>", True, "@@Header")
+        header=Helpers.MarkSection(inputHtml, htmlFilename, '<!DOCTYPE HTML>', "</HEAD><BODY>", True, "@@Header")
         if header == None:
             continue
 
         # And find the HTML footer
-        footer=MarkSection(inputHtml, "</BODY></HTML>", None, True, "@@Footer")
+        footer=Helpers.MarkSection(inputHtml, htmlFilename, "</BODY></HTML>", None, True, "@@Footer")
 
         # Next identify the actual content.
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
-        content=MarkSection(inputHtml, '<DIV CLASS="center">', "</DIV>", True, "@@Content")
+        content=Helpers.MarkSection(inputHtml, htmlFilename, '<DIV CLASS="center">', "</DIV>", True, "@@Content")
         if content == None:
             continue
 
         # Find and remove any <HR> lines
-        while MarkSection(inputHtml, '<HR>', "", False, "@@HR"):
+        while Helpers.MarkSection(inputHtml, htmlFilename, '<HR>', "", False, "@@HR"):
             pass
 
         # Find and remove tables of buttons (save the previous and next page nav button information)
@@ -131,13 +98,13 @@ for directory in dirList:
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
         navButtons=[[]]
         while True:
-            navstuff=MarkSection(inputHtml, '<TABLE ALIGN="center" CLASS="navbar"><TR>', "</TR></TABLE>", False, "@@Navbuttons")
+            navstuff=Helpers.MarkSection(inputHtml, htmlFilename, '<TABLE ALIGN="center" CLASS="navbar"><TR>', "</TR></TABLE>", False, "@@Navbuttons")
             if navstuff == None:
                 break
 
             # Confirm that all the intervening lines begin with '<TD CLASS="navbar">'
             if len(navstuff) < 2:
-                print(" ***navbar block found without buttons found between " + str(startline)+ " and " + str(endline) + " in " + htmlFilename)
+                print(" ***navbar block found without buttons found in " + htmlFilename +" in \n"+str(navstuff))
                 break
             for i in range(1, len(navstuff)-1):
                 if navstuff[i].find('<TD CLASS="navbar">') != 0:
@@ -174,24 +141,13 @@ for directory in dirList:
             print("   ***No '<A HREF...</A>' found in" + str(printingContent))
             continue
 
-        def InsertLines(input, textToBeReplaced, linesToInsert):
-            # Scan through input looking for a line containing textToBeReplaced
-            for i in range(0, len(input)-1):
-                if input[i] == textToBeReplaced:
-                    del(input[i])
-                    input[i:i]=linesToInsert
-                    return True
-
-            print("   *** Could not find '" + textToBeReplaced+"' in "+str(input))
-            return False
-
-        if not InsertLines(printingHtml, "@@Content", printingContent):
+        if not Helpers.InsertLines(printingHtml, "@@Content", printingContent):
             continue
 
-        if not InsertLines(printingHtml, "@@Header", header):
+        if not Helpers.InsertLines(printingHtml, "@@Header", header):
             continue
 
-        if not InsertLines(printingHtml, "@@Footer", footer):
+        if not Helpers.InsertLines(printingHtml, "@@Footer", footer):
             continue
 
         # Write out the printing version of the page
