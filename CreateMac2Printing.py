@@ -149,6 +149,23 @@ for directory in dirList:
             print("   ***No '<A HREF...</A>' found in" + str(printingContent))
             continue
 
+        # It is also possible we will need to shrink the jpeg a bit to fit on one page.
+        # Scan the content section to find the line containing the IMG spec and parse it
+        maxheight=900
+        maxwidth=500
+        pattern=re.compile("^(.*)HEIGHT=\"([0-9]*)\" WIDTH=\"([0-9]*)\" (.*)$")
+        for i in range(0, len(printingContent)-1):
+            if pattern.match(printingContent[i]):
+                g=pattern.match(printingContent[i]).groups()
+                height=int(g[1])
+                width=int(g[2])
+                if height > maxheight or width > maxwidth:
+                    scale=min(maxheight/height, maxwidth/width)
+                    height=int(scale*height)
+                    width=int(scale*width)
+                    printingContent[i]=g[0] + 'HEIGHT="' + str(height) + '" WIDTH="' + str(width) + '" ' + g[3]
+                break
+
         # And insert it back into the file.
         if not Helpers.InsertLines(printingHtml, "@@Content", printingContent):
             continue
