@@ -97,7 +97,7 @@ for directory in dirList:
         # Find and remove tables of buttons (save the previous and next page nav button information)
         # First identify the actual content.
         # This begins with '<DIV CLASS="center">' and ends with '</DIV>' and contains an '<A HREF=...</A>'
-        navButtons=[[]]
+        navButtons=[]
         while True:
             navstuff=Helpers.MarkSection(inputHtml, htmlFilename, '<TABLE ALIGN="center" CLASS="navbar"><TR>', "</TR></TABLE>", False, "@@Navbuttons")
             if navstuff == None:
@@ -114,7 +114,7 @@ for directory in dirList:
             # Save the block
             navButtons.append(navstuff)
 
-        # -----------------------------------------------------------
+        # =======================================================================
         # Now we start building up the printing html page
         # This will be like the original, but with all HRs and all nav buttons removed.
         printingHtml=copy.deepcopy(inputHtml)
@@ -173,15 +173,52 @@ for directory in dirList:
         # Restore the rest of the content
         if not Helpers.InsertLines(printingHtml, "@@Header", header):
             continue
-
         if not Helpers.InsertLines(printingHtml, "@@Footer", footer):
             continue
 
         # Write out the printing version of the page
         splt=os.path.splitext(htmlFilename)
-        printFilename=os.path.join(directory, splt[0]+"P"+splt[1])
-        with open(printFilename, "w") as f:
+        printFilename=splt[0]+"P"+splt[1]
+        printPathname=os.path.join(directory, printFilename)
+        with open(printPathname, "w") as f:
             f.writelines(printingHtml)
+
+        # =======================================================================
+        # OK, now it's time to edit the non-printing html to add the print button
+        normalHtml=copy.deepcopy(inputHtml)
+
+        # Get the code for the 1st set of nav buttons
+        # This consists of
+        #   A <TABLE line
+        #   A number of <TD CLASS lines
+        #   a </TR></TABLE> line
+        navstuff=navButtons[0]
+
+        # Step 1 is to remove any previous incarnations of the print button.  We will do this be deleting lines containing the string "Mac2Pframe"
+        navstuff=[l for l in navstuff if l.find("Mac2Pframe") == -1]
+
+        # Insert the frame definition just before the nav button block
+        navstuff.insert(0, '<iframe src="' + printFilename + '" style="display:none;" name="Mac2Pframe"></iframe>')
+
+        # Insert the new print button between the last two nav buttons
+        navstuff.insert(-2, 'TD CLASS="navbar"><form><input type="button" onclick="frames[\'Mac2Pframe\'].print()" value="Print"></form></TD>')
+
+        navButtons[0]=navstuff
+
+        # Now replace all the blocks
+        if not Helpers.InsertLines(normalHtml, "@@Content", content):
+            continue
+        if not Helpers.InsertLines(normalHtml, "@@Header", header):
+            continue
+        if not Helpers.InsertLines(normalHtml, "@@Footer", footer):
+            continue
+        if not Helpers.InsertLines(normalHtml, "@@HR", ["<HR>"]):
+            continue
+        if not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[0]):
+            continue
+        if len(navButtons) > 1 and not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[1]):
+            continue
+
         i=0
         pass
     pass
