@@ -18,34 +18,43 @@ os.chdir(dirname)
 dirList = os.listdir(".")
 dirList = [f for f in dirList if os.path.isdir(f)]
 
-toBeSkipped=["Abstract", "Acolyte", "Amor", "AngeliqueTrouvere", "Aspidistra", "Australian_SFR", "AvramDavidson", "BestOfSusanWood", "Bids_etc", "Beyond_Enchanted", "BNF_of_IZ", "Boskone", "Broken Toys",
-             "Censored", "Chanticlear", "Chicon", "Cinvention", "Clevention", "Comic_Art", "Confusion", "ConStellation", "Crifanac", "Cry_of_the_Nameless", "Denvention", "Destiny",
-             "Diagonal_Relationship", "Don_Ford_Notebook", "Eastercon", "Eclipse", "Enchanted_Duplicxtor", "Entropy", "Fan-Dango", "Fan-Fare", "Fanscient", "Fantascience_Digest",
-             "Fantastic_Worlds", "Fantasy_Comics", "Fantasy_Comment", "FightingSmofs", "FuturiaFantasia", "Futurian", "GAPAVanguard", "Gardyloo", "Gegenschein", "GenrePlat", "Gotterdammerung",
-             "Harlan_Ellison", "Helios", "Hyphen", "IGOTS", "IguanaCon", "Interaction", "Journal_of_SF", "LASFS", "Le_Zombie", "leaflet", "LeeHoffman", "LeVombiteur", "Loncon",
-             "LostToys", "Lunacon", "Mad3Party", "MagiCon", "Mallophagan", "Masque", "MelbourneBulletin", "Mimosa", "Minicon", "Miscellaneous", "Monster", "MT_Void",
-             "NebulaAwardsBanquet", "NewFrontiers", "Nolacon", "NOLAzine", "NowWesCon", "NOSFAn", "Novae_Terrae", "NYcon", "ODD", "OKon", "OperationFantast", "Opuntia", "Organlegger",
-             "Pacificon", "Peace_on_Sol_III", "peon", "Phan", "Philcon", "planet", "Planeteer", "Plokta", "Polaris", "Pong", "Quandry", "Rhodomagnetic", "Rogers_Cadenhead_APA_Pubs",
-             "RUNE", "ScientiComics", "Seacon", "Sense_of_FAPA", "SF", "SF_Advertiser", "SF_Digest", "SF_Digest_2", "SF_Five_Yearly", "SFCon", "SFSFS", "Shangri-LA",
-             "Shards_of_Bable", "SkyHook", "Slant", "Solacon", "SpaceDiversions", "SpaceFlight", "SpaceMagazine", "Spaceship", "Spacewarp", "Spaceways", "Speculation",
+notNewszines=["Abstract", "Acolyte", "Amor", "AngeliqueTrouvere", "Askew", "Aspidistra", "Austra-Fantasy", "Australian_SFR", "AvramDavidson", "Babel_On", "BEM", "BestOfSusanWood",
+             "Bids_etc", "Beyond_Enchanted", "BNF_of_IZ", "Boskone", "BrokenToys", "Censored", "Chanticleer", "Chicon", "Cinvention", "Clevention", "Comic_Art",
+             "Confusion", "ConStellation", "Cosmag", "Crifanac", "Cry_of_the_Nameless", "CyberCozen", "Denvention", "Destiny", "Diagonal_Relationship", "Don_Ford_Notebook", "Eastercon",
+             "Eclipse", "Enchanted_Duplicator", "Entropy", "Fan-Dango", "Fan-Fare", "FANAC-Updates", "Fanscient", "Fantascience_Digest", "Fantastic_Worlds", "Fantasy_Comics",
+              "Fantasy_Comment", "FightingSmofs", "FuturiaFantasia", "Futurian", "GAPAVanguard", "Gardyloo", "Gegenschein", "GenrePlat", "Gotterdammerung",
+              "Harlan_Ellison", "Helios", "Hyphen", "IGOTS", "IguanaCon", "Interaction", "Journal_of_SF", "LASFS", "Le_Zombie", "Leaflet", "LeeHoffman", "LeVombiteur", "Loncon",
+              "LostToys", "Lunacon", "Mad3Party", "MagiCon", "Mallophagan", "Masque", "MelbourneBulletin", "Mimosa", "Minicon", "Miscellaneous", "Monster", "MT_Void",
+              "NebulaAwardsBanquet", "NewFrontiers", "Nolacon", "NOLAzine", "NorWesCon", "NOSFAn", "Novae_Terrae", "NYcon", "ODD", "OKon", "OperationFantast", "Opuntia", "Organlegger",
+              "Pacificon", "Peace_on_Sol_III", "Peon", "Phan", "Philcon", "Pittcon", "Planet", "Planeteer", "Plokta", "Polaris", "Pong", "Quandry", "Rhodomagnetic", "Rogers_Cadenhead_APA_Pubs",
+              "RUNE", "ScientiComics", "Seacon", "Sense_of_FAPA", "SF", "SF_Advertiser", "SF_Digest", "SF_Digest_2", "SF_Five_Yearly", "SFCon", "SFSFS", "Shangri-LA",
+              "Shards_of_Bable", "SkyHook", "Slant", "Solacon", "SpaceDiversions", "SpaceFlight", "SpaceMagazine", "Spaceship", "Spacewarp", "Spaceways", "Speculation",
              "Starlight", "SunSpots", "Syllabus", "TaralWaynePreviews", "TNFF", "TommyWorld", "Tomorrow", "Toto", "Tropicon", "TuckerBag", "Tympany", "Vampire", "Vanations",
              "Vapourware", "Vega", "Vertigo", "VOM", "Wastebasket", "WhatIsSFF", "WildHair", "Willis_papers", "Wrevenge", "X", "Yandro", "Yokohama", "Zenith"]
+notJpegs=["Bullsheet", "Fantasy_Magazine"]
 
-dirList = [f for f in dirList if not f in toBeSkipped]
+dirList = [f for f in dirList if not f in notNewszines and not f in notJpegs]
 
 # We now have a list of directories to be modified
 for directory in dirList:
+
+    print(directory)
 
     # Create a list of all html files in the directory
     htmlFileList=os.listdir(directory)
     htmlFileList=[f for f in htmlFileList if os.path.splitext(f)[1].lower() == ".html"] # HTML files only
     htmlFileList=[f for f in htmlFileList if os.path.splitext(f)[0][-1:] != "P"] # Don't process printing HTML files which have already been created -- they'll most likely be overwritten.
+    sorted(htmlFileList)    # It's easier to follow if it's done in alphabetic order...
 
     # For each html file in the directory
     for htmlFilename in htmlFileList:
 
-        # Skip index files
-        if htmlFilename == "index.html":
+        # Skip index files and those mysterious fox*.html files
+        if htmlFilename == "index.html" or htmlFilename.find("fox") == 0:
+            continue
+
+        # Skip files ending in "-00" as these are ToC files
+        if os.path.splitext(htmlFilename)[0][-3:] == "-00":
             continue
 
         # Open the file and read it into a list of strings
@@ -157,8 +166,11 @@ for directory in dirList:
         for i in range(0, len(printingContent)-1):
             if pattern.match(printingContent[i]):
                 g=pattern.match(printingContent[i]).groups()
-                height=int(g[1])
-                width=int(g[2])
+                try:
+                    height=int(g[1])
+                    width=int(g[2])
+                except:
+                    break
                 if height > maxheight or width > maxwidth:
                     scale=min(maxheight/height, maxwidth/width)
                     height=int(scale*height)
@@ -180,8 +192,8 @@ for directory in dirList:
         splt=os.path.splitext(htmlFilename)
         printFilename=splt[0]+"P"+splt[1]
         printPathname=os.path.join(directory, printFilename)
-        with open(printPathname, "w") as f:
-            f.writelines(printingHtml)
+        #with open(printPathname, "w") as f:
+            #f.writelines(printingHtml)
 
         # =======================================================================
         # OK, now it's time to edit the non-printing html to add the print button
@@ -221,8 +233,9 @@ for directory in dirList:
 
         # Write out the display version of the page
         displayPathname=os.path.join(directory, htmlFilename)
-        with open(displayPathname, "w") as f:
-            f.writelines(normalHtml)
+        #with open(displayPathname, "w") as f:
+            #f.writelines(normalHtml)
+
 
         i=0
         pass
