@@ -206,18 +206,19 @@ for directory in dirList:
         #   A <TABLE line
         #   A number of <TD CLASS lines
         #   a </TR></TABLE> line
-        navstuff=navButtons[0]
+        if len(navButtons) > 0:
+            navstuff=navButtons[0]
 
-        # Step 1 is to remove any previous incarnations of the print button.  We will do this be deleting lines containing the string "Mac2Pframe"
-        navstuff=[l for l in navstuff if l.find("Mac2Pframe") == -1]
+            # Step 1 is to remove any previous incarnations of the print button.  We will do this be deleting lines containing the string "Mac2Pframe"
+            navstuff=[l for l in navstuff if l.find("Mac2Pframe") == -1]
 
-        # Insert the frame definition just before the nav button block
-        navstuff.insert(0, '<iframe src="' + printFilename + '" style="display:none;" name="Mac2Pframe"></iframe>')
+            # Insert the frame definition just before the nav button block
+            navstuff.insert(0, '<iframe src="' + printFilename + '" style="display:none;" name="Mac2Pframe"></iframe>')
 
-        # Insert the new print button between the last two nav buttons
-        navstuff.insert(-2, '<TD CLASS="navbar"><form><input type="button" onclick="frames[\'Mac2Pframe\'].print()" value="Print"></form></TD>')
+            # Insert the new print button between the last two nav buttons
+            navstuff.insert(-2, '<TD CLASS="navbar"><form><input type="button" onclick="frames[\'Mac2Pframe\'].print()" value="Print"></form></TD>')
 
-        navButtons[0]=navstuff
+            navButtons[0]=navstuff
 
         # Now replace all the blocks
         if not Helpers.InsertLines(normalHtml, "@@Content", content, True):
@@ -228,8 +229,9 @@ for directory in dirList:
             continue
         if not Helpers.InsertLines(normalHtml, "@@HR", ["<HR>"], False):
             continue
-        if not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[0], True):
-            continue
+        if len(navButtons) > 0:
+            if not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[0], True):
+                continue
         if len(navButtons) > 1 and not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[1], True):
             continue
 
