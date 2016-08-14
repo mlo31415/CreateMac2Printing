@@ -30,7 +30,7 @@ notNewszines=["Abstract", "Acolyte", "Amor", "AngeliqueTrouvere", "Askew", "Aspi
               "RUNE", "ScientiComics", "Seacon", "Sense_of_FAPA", "SF", "SF_Advertiser", "SF_Digest", "SF_Digest_2", "SF_Five_Yearly", "SFCon", "SFSFS", "Shangri-LA",
               "Shards_of_Bable", "SkyHook", "Slant", "Solacon", "SpaceDiversions", "SpaceFlight", "SpaceMagazine", "Spaceship", "Spacewarp", "Spaceways", "Speculation",
              "Starlight", "SunSpots", "Syllabus", "TaralWaynePreviews", "TNFF", "TommyWorld", "Tomorrow", "Toto", "Tropicon", "TuckerBag", "Tympany", "Vampire", "Vanations",
-             "Vapourware", "Vega", "Vertigo", "VOM", "Wastebasket", "WhatIsSFF", "WildHair", "Willis_papers", "Wrevenge", "X", "Yandro", "Yokohama", "Zenith"]
+             "Vapourware", "Vega", "Vertigo", "VOM", "Wastebasket", "WhatIsSFF", "WildHair", "Willis_Papers", "Wrevenge", "X", "Yandro", "Yokohama", "Zenith"]
 notJpegs=["Bullsheet", "Fantasy_Magazine"]
 
 dirList = [f for f in dirList if not f in notNewszines and not f in notJpegs]
@@ -50,7 +50,7 @@ for directory in dirList:
     for htmlFilename in htmlFileList:
 
         # Skip index files and those mysterious fox*.html files
-        if htmlFilename == "index.html" or htmlFilename.find("fox") == 0:
+        if htmlFilename.find("index") == 0 or htmlFilename.find("fox") == 0:
             continue
 
         # Skip files ending in "-00" as these are ToC files
@@ -86,9 +86,11 @@ for directory in dirList:
 
         # First, find the document HTML header
         # This begins with <!DOCTYPE HTML> and ends with </HEAD></BODY>
-        header=Helpers.MarkSection(inputHtml, htmlFilename, '<!DOCTYPE HTML>', "</HEAD><BODY>", True, "@@Header")
+        header=Helpers.MarkSection(inputHtml, htmlFilename, '<!DOCTYPE HTML>', "</HEAD><BODY>", False, "@@Header")
         if header == None:
-            continue
+            header=Helpers.MarkSection(inputHtml, htmlFilename, '<!DOCTYPE HTML>', "</HEAD>", True, "@@Header")
+            if not Helpers.MarkSection(inputHtml, htmlFilename, '<BODY>', "<BODY>", True, "@@Header"):
+                continue
 
         # And find the HTML footer
         footer=Helpers.MarkSection(inputHtml, htmlFilename, "</BODY></HTML>", None, True, "@@Footer")
@@ -138,7 +140,7 @@ for directory in dirList:
         printingHtml=[l for l in printingHtml if not pattern.match(l)]
 
         # And add the printing line right after the content
-        Helpers.InsertLines(printingHtml, "@@Content", ["@@Content", "<P>Printed by Fanac.org at at MidAmericon 2. For <i>much</i> more, see http://fanac.org</P>"])
+        Helpers.InsertLines(printingHtml, "@@Content", ["@@Content", "<P>Printed by Fanac.org at at MidAmericon 2. For <i>much</i> more, see http://fanac.org</P>"], True)
 
         # Now we need to modify the content lines to include the bounding box
         printingContent = copy.deepcopy(content)
@@ -179,13 +181,13 @@ for directory in dirList:
                 break
 
         # And insert it back into the file.
-        if not Helpers.InsertLines(printingHtml, "@@Content", printingContent):
+        if not Helpers.InsertLines(printingHtml, "@@Content", printingContent, True):
             continue
 
         # Restore the rest of the content
-        if not Helpers.InsertLines(printingHtml, "@@Header", header):
+        if not Helpers.InsertLines(printingHtml, "@@Header", header, True):
             continue
-        if not Helpers.InsertLines(printingHtml, "@@Footer", footer):
+        if not Helpers.InsertLines(printingHtml, "@@Footer", footer, True):
             continue
 
         # Write out the printing version of the page
@@ -218,17 +220,17 @@ for directory in dirList:
         navButtons[0]=navstuff
 
         # Now replace all the blocks
-        if not Helpers.InsertLines(normalHtml, "@@Content", content):
+        if not Helpers.InsertLines(normalHtml, "@@Content", content, True):
             continue
-        if not Helpers.InsertLines(normalHtml, "@@Header", header):
+        if not Helpers.InsertLines(normalHtml, "@@Header", header, True):
             continue
-        if not Helpers.InsertLines(normalHtml, "@@Footer", footer):
+        if not Helpers.InsertLines(normalHtml, "@@Footer", footer, True):
             continue
-        if not Helpers.InsertLines(normalHtml, "@@HR", ["<HR>"]):
+        if not Helpers.InsertLines(normalHtml, "@@HR", ["<HR>"], False):
             continue
-        if not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[0]):
+        if not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[0], True):
             continue
-        if len(navButtons) > 1 and not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[1]):
+        if len(navButtons) > 1 and not Helpers.InsertLines(normalHtml, "@@Navbuttons", navButtons[1], True):
             continue
 
         # Write out the display version of the page
